@@ -1,29 +1,37 @@
+FROM node:18-alpine AS frontend-builder
+WORKDIR /app/frontend
+COPY src/frontend_vite/package*.json ./
+RUN npm install
+COPY src/frontend_vite/ ./
+RUN npm run build
+
+# Stage 2: Python Backend + Serve Frontend
 FROM python:3.9-slim
 
 WORKDIR /app
 
 # Install system dependencies
-# unixodbc-dev & g++ are for pyodbc compatibility (even if we use sqlite)
-# curl/gnupg are standard utilities
 RUN apt-get update && apt-get install -y \
     unixodbc-dev \
+    gcc \
     g++ \
-    curl \
-    gnupg \
+    sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for cache efficiency
-COPY requirements.txt .
+# Copy backend code
+COPY src/backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+COPY src/backend/ .
 
-# Set environment to use SQLite
+# Copy built frontend from stage 1
+COPY --from=frontend-builder /app/frontend/dist /app/static
+
+# Set environment
 ENV DB_TYPE=sqlite
+ENV PORT=8000
 
-# Expose port (Render automatically maps 80 to this user-defined port usually, but 8000 is standard)
 EXPOSE 8000
 
-# Run the app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run backend
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT

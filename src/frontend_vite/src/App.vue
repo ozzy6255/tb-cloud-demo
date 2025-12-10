@@ -10,8 +10,8 @@ const error = ref(null)
 const logisticsRecord = ref(null)
 const searchMode = ref('product') // 'product' or 'logistics'
 
-// API Configuration
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8002'
+// API Configuration - use /api prefix for production
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 const fetchProducts = async () => {
   try {
