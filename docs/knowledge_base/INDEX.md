@@ -19,3 +19,5 @@
 
 ## Architecture (架构设计)
 - [SQL Server vs SQLite](/docs/knowledge_base/db_comparison.md)
+- [Docker 部署全流程](/docs/knowledge_base/docker_deployment.md)
+- [数据流程图](/docs/knowledge_base/data_flow_diagram.md)
