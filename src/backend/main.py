@@ -19,6 +19,14 @@ def read_root():
     return {"message": "Welcome to TBAnti Query API. Visit /docs for Swagger UI."}
 
 from models import Product
+import models # Added to resolve models.LogisticsRecord
+
+@app.get("/logistics")
+def get_logistics(code: str, db: Session = Depends(get_db)):
+    record = db.query(models.LogisticsRecord).filter(models.LogisticsRecord.Code == code).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Logistics record not found")
+    return record
 
 @app.get("/products")
 def get_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
