@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBAnti Query</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        .product-list { margin-top: 20px; }
+        .product-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .product-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <h1>📦 TBAnti Product List</h1>
+    <p>Loading products from local API...</p>
+    <div id="list" class="product-list"></div>
+
+    <script>
+        async function loadProducts() {
+            try {
+                const response = await fetch('http://localhost:8000/products');
+                const products = await response.json();
+                
+                const list = document.getElementById('list');
+                list.innerHTML = '';
+                
+                if (products.length === 0) {
+                    list.innerHTML = '<p>No products found.</p>';
+                } else {
+                    products.forEach(p => {
+                        const div = document.createElement('div');
+                        div.className = 'product-item';
+                        div.innerHTML = `<strong>${p.ProductName}</strong> (ID: ${p.ProductId})`;
+                        list.appendChild(div);
+                    });
+                }
+                document.querySelector('p').textContent = `Loaded ${products.length} products.`;
+            } catch (err) {
+                document.querySelector('p').textContent = 'Error loading products: ' + err.message;
+                console.error(err);
+            }
+        }
+        loadProducts();
+    </script>
+</body>
+</html>
