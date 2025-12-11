@@ -1,13 +1,4 @@
-# Stage 1: Build Vue Frontend
-FROM node:18-alpine AS frontend-builder
-WORKDIR /app/frontend
-COPY src/frontend_vite/package*.json ./
-RUN npm install
-COPY src/frontend_vite/ ./
-RUN npm run build
-RUN echo "=== Build completed, checking dist/ ===" && ls -la dist/ || echo "dist/ not found!"
-
-# Stage 2: Python Backend + Serve Frontend
+# Simplified Dockerfile - Frontend pre-built locally
 FROM python:3.9-slim
 
 WORKDIR /app
@@ -27,9 +18,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY src/backend/ .
 
-# Copy built frontend from stage 1
-COPY --from=frontend-builder /app/frontend/dist /app/static
-RUN echo "=== Checking /app/static/ ===" && ls -la /app/static/ || echo "/app/static/ is empty or missing!"
+# Copy pre-built frontend (built locally before git push)
+COPY src/frontend_vite/dist /app/static
+
+# Verify static files exist
+RUN ls -la /app/static/ && echo "Static files verified!"
 
 # Set environment
 ENV DB_TYPE=sqlite
