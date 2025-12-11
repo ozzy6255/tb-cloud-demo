@@ -1,3 +1,4 @@
+<script setup>
 import { ref, onMounted, computed } from 'vue'
 import SearchBar from './components/SearchBar.vue'
 import ProductCard from './components/ProductCard.vue'

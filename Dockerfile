@@ -5,6 +5,7 @@ COPY src/frontend_vite/package*.json ./
 RUN npm install
 COPY src/frontend_vite/ ./
 RUN npm run build
+RUN echo "=== Build completed, checking dist/ ===" && ls -la dist/ || echo "dist/ not found!"
 
 # Stage 2: Python Backend + Serve Frontend
 FROM python:3.9-slim
@@ -28,6 +29,7 @@ COPY src/backend/ .
 
 # Copy built frontend from stage 1
 COPY --from=frontend-builder /app/frontend/dist /app/static
+RUN echo "=== Checking /app/static/ ===" && ls -la /app/static/ || echo "/app/static/ is empty or missing!"
 
 # Set environment
 ENV DB_TYPE=sqlite
